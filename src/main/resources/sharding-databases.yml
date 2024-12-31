@@ -1,0 +1,38 @@
+databaseName: sharding_db
+
+dataSources:
+  shard0:
+    jdbcUrl: jdbc:postgresql://localhost:5433/shard1db
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  shard1:
+    jdbcUrl: jdbc:postgresql://localhost:5434/shard2db
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+
+rules:
+  - !SHARDING
+    tables:
+      orders:
+        actualDataNodes: shard${0..1}.orders
+        databaseStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: hash_mod
+      order_items:
+        actualDataNodes: shard${0..1}.order_items
+        databaseStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: hash_mod
+
+    shardingAlgorithms:
+      hash_mod:
+        type: INLINE
+        props:
+          algorithm-expression: shard${order_id % 2}
+          allow-range-query-with-inline-sharding: true

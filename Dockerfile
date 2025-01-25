@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copy the built JAR into the container
-COPY target/Sharding-1.0-SNAPSHOT-shaded.jar app.jar
+COPY target/Sharding-1.0-SNAPSHOT.jar app.jar
 
 # Default to listening on 8080 in the container
 EXPOSE 8080

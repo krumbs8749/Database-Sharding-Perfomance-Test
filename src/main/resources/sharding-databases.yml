@@ -2,14 +2,14 @@ databaseName: sharding_db
 
 dataSources:
   shard0:
-    jdbcUrl: jdbc:postgresql://localhost:5433/shard1db
+    jdbcUrl: jdbc:postgresql://pg-shard1:5432/shard1db
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
 
   shard1:
-    jdbcUrl: jdbc:postgresql://localhost:5434/shard2db
+    jdbcUrl: jdbc:postgresql://pg-shard2:5432/shard2db
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver

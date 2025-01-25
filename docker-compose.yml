@@ -1,19 +1,61 @@
 version: "3.8"
 
 services:
-  server1:
-    build: .
-    container_name: server1
-    # Force it to listen on 8080 inside the container, but we map it to 8081 outside
+  # PostgreSQL Shard 0
+  pg-shard1:
+    image: postgres:15
+    container_name: pg-shard1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shard1db
     ports:
-      - "8081:8080"
-    command: ["--server.port=8080"]  # override if needed
-    # Optionally pin resources
+      - "5433:5432"  # Host:Container
     deploy:
       resources:
         limits:
           cpus: '1'
+          memory: '2g'
+    networks:
+      - sharding-network
+
+  # PostgreSQL Shard 1
+  pg-shard2:
+    image: postgres:15
+    container_name: pg-shard2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shard2db
+    ports:
+      - "5434:5432"  # Host:Container
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '2g'
+    networks:
+      - sharding-network
+
+
+  # Java Server Instances
+  server1:
+    build: .
+    container_name: server1
+    ports:
+      - "8081:8080"  # Host:Container
+    command: ["--server.port=8080"]
+    deploy:
+      resources:
+        limits:
+          cpus: '1.75'
           memory: '1g'
+    depends_on:
+      - pg-shard1
+      - pg-shard2
+      - pg-single
+    networks:
+      - sharding-network
 
   server2:
     build: .
@@ -24,8 +66,14 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '1.75'
           memory: '1g'
+    depends_on:
+      - pg-shard1
+      - pg-shard2
+      - pg-single
+    networks:
+      - sharding-network
 
   server3:
     build: .
@@ -36,9 +84,16 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '1.75'
           memory: '1g'
+    depends_on:
+      - pg-shard1
+      - pg-shard2
+      - pg-single
+    networks:
+      - sharding-network
 
+  # Nginx Load Balancer
   nginx:
     image: nginx:latest
     container_name: nginx-lb
@@ -50,3 +105,9 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - sharding-network
+
+networks:
+  sharding-network:
+    driver: bridge

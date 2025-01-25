@@ -1,0 +1,41 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             version="2.2"
+             xsi:schemaLocation="
+               http://xmlns.jcp.org/xml/ns/persistence
+               http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <persistence-unit name="ShardingPU">
+        <!-- Use Hibernate as JPA provider -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Entity classes or a package-level scan might be needed -->
+        <!-- <class>com.example.sharding.entity.YourEntity</class> -->
+        <!-- <class>com.example.sharding.entity.AnotherEntity</class> -->
+
+        <properties>
+            <!-- ShardingSphere driver + config -->
+            <property name="javax.persistence.jdbc.driver"
+                      value="org.apache.shardingsphere.driver.ShardingSphereDriver"/>
+            <property name="javax.persistence.jdbc.url"
+                      value="jdbc:shardingsphere:classpath:sharding-databases.yml"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+            <property name="javax.persistence.jdbc.password" value="postgres"/>
+
+            <!-- Hibernate Dialect -->
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.PostgreSQLDialect"/>
+
+            <!-- DDL-auto behavior: none, update, etc. -->
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+
+            <!-- Logging of SQL -->
+            <property name="hibernate.show_sql" value="true"/>
+            <!-- Format the SQL in logs (optional) -->
+            <property name="hibernate.format_sql" value="true"/>
+
+
+            <property name="hibernate.jdbc.batch_size" value="50"/>
+            <property name="hibernate.jdbc.fetch_size" value="10000"/>
+        </properties>
+    </persistence-unit>
+</persistence>

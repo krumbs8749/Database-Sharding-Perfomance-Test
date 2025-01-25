@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  server1:
+    build: .
+    container_name: server1
+    # Force it to listen on 8080 inside the container, but we map it to 8081 outside
+    ports:
+      - "8081:8080"
+    command: ["--server.port=8080"]  # override if needed
+    # Optionally pin resources
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1g'
+
+  server2:
+    build: .
+    container_name: server2
+    ports:
+      - "8082:8080"
+    command: ["--server.port=8080"]
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1g'
+
+  server3:
+    build: .
+    container_name: server3
+    ports:
+      - "8083:8080"
+    command: ["--server.port=8080"]
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1g'
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-lb
+    depends_on:
+      - server1
+      - server2
+      - server3
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro

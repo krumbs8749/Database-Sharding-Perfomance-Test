@@ -7,6 +7,7 @@ dataSources:
     password: postgres
     driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+
   shard1:
     jdbcUrl: jdbc:postgresql://localhost:5434/shard2db
     username: postgres
@@ -36,3 +37,6 @@ rules:
         props:
           algorithm-expression: shard${order_id % 2}
           allow-range-query-with-inline-sharding: true
+
+props:
+  sql-show: true

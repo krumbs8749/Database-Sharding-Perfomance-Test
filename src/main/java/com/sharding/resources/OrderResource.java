@@ -3,11 +3,8 @@ package com.sharding.resources;
 import com.sharding.EMFProvider;
 import com.sharding.dao.OrderDao;
 import com.sharding.entities.OrderEntity;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.PersistenceUnit;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -41,6 +38,34 @@ public class OrderResource {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             return Response.ok(entity).build();
+        } finally {
+            em.close();
+        }
+    }
+
+    // New endpoint: Retrieve only the first 100 orders (useful as a multi-shard query)
+    @GET
+    @Path("/firstN/{n}")
+    public List<OrderEntity> getFirst100Orders(@PathParam("n") int  n) {
+        var em = EMFProvider.getEMF().createEntityManager();
+        try {
+            OrderDao dao = new OrderDao(em);
+            // You should implement the findFirstN(int n) method in your OrderDao.
+            return dao.findFirstN(n);
+        } finally {
+            em.close();
+        }
+    }
+
+    // New endpoint: Retrieve orders by a given user id (multi-shard query since the shard key is not used)
+    @GET
+    @Path("/by-user/{userId}")
+    public List<OrderEntity> getOrdersByUserId(@PathParam("userId") Long userId) {
+        var em = EMFProvider.getEMF().createEntityManager();
+        try {
+            OrderDao dao = new OrderDao(em);
+            // You should implement the findByUserId(Long userId) method in your OrderDao.
+            return dao.findByUserId(userId);
         } finally {
             em.close();
         }

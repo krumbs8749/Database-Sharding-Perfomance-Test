@@ -7,6 +7,12 @@ dataSources:
     password: postgres
     driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    poolName: HikariPool-shard0
+    maximumPoolSize: 100      # Increased from default (10)
+    minimumIdle: 20           # Adjust based on load
+    connectionTimeout: 30000  # 30 seconds
+    idleTimeout: 600000       # 10 minutes
+    maxLifetime: 1800000
 
   shard1:
     jdbcUrl: jdbc:postgresql://pg-shard2:5432/shard2db
@@ -14,6 +20,11 @@ dataSources:
     password: postgres
     driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    maximumPoolSize: 100      # Increased from default (10)
+    minimumIdle: 20           # Adjust based on load
+    connectionTimeout: 30000  # 30 seconds
+    idleTimeout: 600000       # 10 minutes
+    maxLifetime: 1800000
 
 rules:
   - !SHARDING
@@ -39,4 +50,4 @@ rules:
           allow-range-query-with-inline-sharding: true
 
 props:
-  sql-show: true
+  sql-show: false

@@ -12,4 +12,4 @@ EXPOSE 8080
 
 # Optionally set some memory or GC opts via ENV or CMD
 # We'll override the port via command line or environment
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-Xms512m", "-Xmx2g", "-jar", "/app/app.jar"]

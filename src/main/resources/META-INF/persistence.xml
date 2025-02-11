@@ -8,9 +8,6 @@
         <!-- Use Hibernate as JPA provider -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <!-- Entity classes or a package-level scan might be needed -->
-        <!-- <class>com.example.sharding.entity.YourEntity</class> -->
-        <!-- <class>com.example.sharding.entity.AnotherEntity</class> -->
 
         <properties>
             <!-- ShardingSphere driver + config -->
@@ -29,13 +26,20 @@
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
 
             <!-- Logging of SQL -->
-            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.show_sql" value="false"/>
             <!-- Format the SQL in logs (optional) -->
             <property name="hibernate.format_sql" value="true"/>
 
 
             <property name="hibernate.jdbc.batch_size" value="50"/>
             <property name="hibernate.jdbc.fetch_size" value="10000"/>
+
+            <!-- HikariCP Settings -->
+            <property name="hibernate.hikari.connectionTimeout" value="30000"/>
+            <property name="hibernate.hikari.minimumIdle" value="20"/>
+            <property name="hibernate.hikari.maximumPoolSize" value="150"/>
+            <property name="hibernate.hikari.idleTimeout" value="600000"/>
+            <property name="hibernate.hikari.maxLifetime" value="1800000"/>
         </properties>
     </persistence-unit>
 </persistence>

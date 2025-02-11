@@ -1,42 +1,53 @@
-version: "3.8"
+version: "2.4"
 
 services:
   # PostgreSQL Shard 0
   pg-shard1:
-    image: postgres:15
+    image: postgres:latest
     container_name: pg-shard1
+    command: postgres -c 'max_connections=450'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: shard1db
     ports:
       - "5433:5432"  # Host:Container
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: '2g'
+    mem_limit: 1g      # Allocate 1GB of memory
+    cpus: 2            # Allocate 1 CPU
     networks:
       - sharding-network
 
   # PostgreSQL Shard 1
   pg-shard2:
-    image: postgres:15
+    image: postgres:latest
     container_name: pg-shard2
+    command: postgres -c 'max_connections=450'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: shard2db
     ports:
       - "5434:5432"  # Host:Container
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: '2g'
+    mem_limit: 1g      # Allocate 1 GB of memory
+    cpus: 2            # Allocate 1 CPU
     networks:
       - sharding-network
 
+  # PostgreSQL Single DB
+  pg-single:
+    image: postgres:latest
+    container_name: pg-single
+    command: postgres -c 'max_connections=450'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: singleDb
+    ports:
+      - "5435:5432"  # Host:Container
+    mem_limit: 1g      # Allocate 1 GB of memory
+    cpus: 2            # 1 and 2 CPU
+    networks:
+      - sharding-network
 
   # Java Server Instances
   server1:
@@ -45,15 +56,11 @@ services:
     ports:
       - "8081:8080"  # Host:Container
     command: ["--server.port=8080"]
-    deploy:
-      resources:
-        limits:
-          cpus: '1.75'
-          memory: '1g'
+    mem_limit: 2g
+    cpus: 2
     depends_on:
       - pg-shard1
       - pg-shard2
-      - pg-single
     networks:
       - sharding-network
 
@@ -63,15 +70,11 @@ services:
     ports:
       - "8082:8080"
     command: ["--server.port=8080"]
-    deploy:
-      resources:
-        limits:
-          cpus: '1.75'
-          memory: '1g'
+    mem_limit: 2g
+    cpus: 2
     depends_on:
       - pg-shard1
       - pg-shard2
-      - pg-single
     networks:
       - sharding-network
 
@@ -81,15 +84,11 @@ services:
     ports:
       - "8083:8080"
     command: ["--server.port=8080"]
-    deploy:
-      resources:
-        limits:
-          cpus: '1.75'
-          memory: '1g'
+    mem_limit: 2g
+    cpus: 2
     depends_on:
       - pg-shard1
       - pg-shard2
-      - pg-single
     networks:
       - sharding-network
 
